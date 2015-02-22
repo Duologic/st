@@ -3240,6 +3240,11 @@ xdraws(char *s, Glyph base, int x, int y, int charlen, int bytelen) {
 	} else if(base.mode & ATTR_UNDERLINE) {
 		if(base.fg == defaultfg)
 			base.fg = defaultunderline;
+	} else if(base.mode & ATTR_BOLD) {
+		if(base.fg == defaultfg)
+			base.fg = defaultbold;
+		font = &dc.bfont;
+		frcflags = FRC_BOLD;
 	}
 
 	if(IS_TRUECOL(base.fg)) {
