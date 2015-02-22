@@ -1201,6 +1201,7 @@ execsh(void) {
 void
 sigchld(int a) {
     int stat = 0;
+    pid_t r;
 
    r = wait(&stat);
    if(r < 0)
