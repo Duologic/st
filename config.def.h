@@ -88,7 +88,7 @@ static unsigned int defaultcs = 12;
  * will reverse too. Another logic would only make the simple feature too
  * complex.
  */
-static unsigned int defaultitalic = 11;
+static unsigned int defaultitalic = 9;
 static unsigned int defaultunderline = 7;
 static unsigned int defaultbold = 9;
 
