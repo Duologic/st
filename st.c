@@ -304,6 +304,7 @@ typedef union {
 	uint ui;
 	float f;
 	const void *v;
+    const char *s;
 } Arg;
 
 typedef struct {
@@ -318,6 +319,7 @@ static void clippaste(const Arg *);
 static void numlock(const Arg *);
 static void selpaste(const Arg *);
 static void xzoom(const Arg *);
+static void externalpipe(const Arg *);
 static void xzoomabs(const Arg *);
 static void xzoomreset(const Arg *);
 static void printsel(const Arg *);
@@ -1198,15 +1200,20 @@ execsh(void) {
 
 void
 sigchld(int a) {
-	int stat, ret;
+    int stat = 0;
 
-	if(waitpid(pid, &stat, 0) < 0)
-		die("Waiting for pid %hd failed: %s\n", pid, strerror(errno));
+   r = wait(&stat);
+   if(r < 0)
+       die("wait(): %s\n", strerror(errno));
 
-	ret = WIFEXITED(stat) ? WEXITSTATUS(stat) : EXIT_FAILURE;
-	if (ret != EXIT_SUCCESS)
-		die("child finished with error '%d'\n", stat);
-	exit(EXIT_SUCCESS);
+   if(r == pid){
+       /* _the_ sub porcess */
+       if(WIFEXITED(stat)) {
+           exit(WEXITSTATUS(stat));
+       } else {
+           exit(EXIT_FAILURE);
+       }
+   }
 }
 
 void
@@ -3106,6 +3113,59 @@ xzoomreset(const Arg *arg) {
 		larg.i = defaultfontsize;
 		xzoomabs(&larg);
 	}
+}
+
+void
+externalpipe(const Arg *arg)
+{
+   int to[2]; /* 0 = read, 1 = write */
+   pid_t child;
+   int y, x;
+   void (*oldsigpipe)(int);
+
+   if(pipe(to) == -1)
+       return;
+
+   /* sigchld() handles this */
+   switch((child = fork())){
+       case -1:
+           close(to[0]), close(to[1]);
+           return;
+       case 0:
+           /* child */
+           close(to[1]);
+           dup2(to[0], STDIN_FILENO); /* 0<&to */
+           close(to[0]);
+           execvp(
+                   "sh",
+                   (char *const []){
+                       "/bin/sh",
+                       "-c",
+                       (char *)arg->s,
+                       0
+                   });
+           exit(127);
+   }
+
+   /* parent */
+   close(to[0]);
+   /* ignore sigpipe for now, in case child exits early */
+   oldsigpipe = signal(SIGPIPE, SIG_IGN);
+
+   for(y = 0; y < term.row; y++){
+       for(x = 0; x < term.col; x++){
+           if(write(to[1], term.line[y][x].c, 1) == -1)
+               goto done;
+       }
+       if(write(to[1], "\n", 1) == -1)
+           break;
+   }
+
+done:
+   close(to[1]);
+
+   /* restore */
+   signal(SIGPIPE, oldsigpipe);
 }
 
 void
