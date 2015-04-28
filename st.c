@@ -325,7 +325,7 @@ static void xzoomreset(const Arg *);
 static void printsel(const Arg *);
 static void printscreen(const Arg *) ;
 static void toggleprinter(const Arg *);
-static void copyurl(const Arg *);
+/*static void copyurl(const Arg *);*/
 
 /* Config.h for applying patches and the configuration. */
 #include "config.h"
