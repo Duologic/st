@@ -3159,57 +3159,58 @@ xzoomreset(const Arg *arg) {
 }
 
 /*void
-* externalpipe(const Arg *arg)
-* {
-*    int to[2]; /* 0 = read, 1 = write *\/
-*    pid_t child;
-*    int y, x;
-*    void (*oldsigpipe)(int);
-* 
-*    if(pipe(to) == -1)
-*        return;
-* 
-*    /* sigchld() handles this *\/
-*    switch((child = fork())){
-*        case -1:
-*            close(to[0]), close(to[1]);
-*            return;
-*        case 0:
-*            /* child *\/
-*            close(to[1]);
-*            dup2(to[0], STDIN_FILENO); /* 0<&to *\/
-*            close(to[0]);
-*            execvp(
-*                    "sh",
-*                    (char *const []){
-*                        "/bin/sh",
-*                        "-c",
-*                        (char *)arg->s,
-*                        0
-*                    });
-*            exit(127);
-*    }
-* 
-*    /* parent *\/
-*    close(to[0]);
-*    /* ignore sigpipe for now, in case child exits early *\/
-*    oldsigpipe = signal(SIGPIPE, SIG_IGN);
-* 
-*    for(y = 0; y < term.row; y++){
-*        for(x = 0; x < term.col; x++){
-*            if(write(to[1], term.line[y][x].c, 1) == -1)
-*                goto done;
-*        }
-*        if(write(to[1], "\n", 1) == -1)
-*            break;
-*    }
-* 
-* done:
-*    close(to[1]);
-* 
-*    /* restore *\/
-*    signal(SIGPIPE, oldsigpipe);
-} */
+ * externalpipe(const Arg *arg)
+ * {
+ *    int to[2]; /* 0 = read, 1 = write *\/
+ *    pid_t child;
+ *    int y, x;
+ *    void (*oldsigpipe)(int);
+ * 
+ *    if(pipe(to) == -1)
+ *        return;
+ * 
+ *    /* sigchld() handles this *\/
+ *    switch((child = fork())){
+ *        case -1:
+ *            close(to[0]), close(to[1]);
+ *            return;
+ *        case 0:
+ *            /* child *\/
+ *            close(to[1]);
+ *            dup2(to[0], STDIN_FILENO); /* 0<&to *\/
+ *            close(to[0]);
+ *            execvp(
+ *                    "sh",
+ *                    (char *const []){
+ *                        "/bin/sh",
+ *                        "-c",
+ *                        (char *)arg->s,
+ *                        0
+ *                    });
+ *            exit(127);
+ *    }
+ * 
+ *    /* parent *\/
+ *    close(to[0]);
+ *    /* ignore sigpipe for now, in case child exits early *\/
+ *    oldsigpipe = signal(SIGPIPE, SIG_IGN);
+ * 
+ *    for(y = 0; y < term.row; y++){
+ *        for(x = 0; x < term.col; x++){
+ *            if(write(to[1], term.line[y][x].c, 1) == -1)
+ *                goto done;
+ *        }
+ *        if(write(to[1], "\n", 1) == -1)
+ *            break;
+ *    }
+ * 
+ * done:
+ *    close(to[1]);
+ * 
+ *    /* restore *\/
+ *    signal(SIGPIPE, oldsigpipe);
+ * }
+ */
 
 void
 xinit(void) {
