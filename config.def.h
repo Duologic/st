@@ -122,7 +122,7 @@ static Shortcut shortcuts[] = {
 	{ MODKEY|ShiftMask,     XK_C,           clipcopy,       {.i =  0} },
 	{ MODKEY|ShiftMask,     XK_V,           clippaste,      {.i =  0} },
 	{ MODKEY,               XK_Num_Lock,    numlock,        {.i =  0} },
-    { MODKEY,               XK_l,           copyurl,        {.i =  0} },
+/*    { MODKEY,               XK_l,           copyurl,        {.i =  0} },*/
 /*    { MODKEY,               XK_u,           externalpipe,   { .s = "xurls | dmenu -l 10 | xargs -r surf" } },*/
 };
 
