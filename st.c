@@ -3161,7 +3161,7 @@ xzoomreset(const Arg *arg) {
 /*void
  * externalpipe(const Arg *arg)
  * {
- *    int to[2]; /* 0 = read, 1 = write *\/
+ *    int to[2];
  *    pid_t child;
  *    int y, x;
  *    void (*oldsigpipe)(int);
@@ -3169,15 +3169,13 @@ xzoomreset(const Arg *arg) {
  *    if(pipe(to) == -1)
  *        return;
  * 
- *    /* sigchld() handles this *\/
  *    switch((child = fork())){
  *        case -1:
  *            close(to[0]), close(to[1]);
  *            return;
  *        case 0:
- *            /* child *\/
  *            close(to[1]);
- *            dup2(to[0], STDIN_FILENO); /* 0<&to *\/
+ *            dup2(to[0], STDIN_FILENO);
  *            close(to[0]);
  *            execvp(
  *                    "sh",
@@ -3190,9 +3188,7 @@ xzoomreset(const Arg *arg) {
  *            exit(127);
  *    }
  * 
- *    /* parent *\/
  *    close(to[0]);
- *    /* ignore sigpipe for now, in case child exits early *\/
  *    oldsigpipe = signal(SIGPIPE, SIG_IGN);
  * 
  *    for(y = 0; y < term.row; y++){
@@ -3207,7 +3203,6 @@ xzoomreset(const Arg *arg) {
  * done:
  *    close(to[1]);
  * 
- *    /* restore *\/
  *    signal(SIGPIPE, oldsigpipe);
  * }
  */
