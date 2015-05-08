@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char font[] = "Liberation Mono:pixelsize=8:antialias=true:autohint=false";
+static char font[] = "Terminess Powerline:pixelsize=8:antialias=true:autohint=false";
 static int borderpx = 1;
 static char shell[] = "/bin/sh";
 static char *utmp = NULL;
