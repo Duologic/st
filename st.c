@@ -314,7 +314,6 @@ typedef union {
 	uint ui;
 	float f;
 	const void *v;
-    const char *s;
 } Arg;
 
 typedef struct {
@@ -330,7 +329,6 @@ static void clippaste(const Arg *);
 static void numlock(const Arg *);
 static void selpaste(const Arg *);
 static void xzoom(const Arg *);
-/*static void externalpipe(const Arg *);*/
 static void xzoomabs(const Arg *);
 static void xzoomreset(const Arg *);
 static void printsel(const Arg *);
@@ -3443,55 +3441,6 @@ xzoomreset(const Arg *arg)
 	}
 }
 
-/*void
- * externalpipe(const Arg *arg)
- * {
- *    int to[2];
- *    pid_t child;
- *    int y, x;
- *    void (*oldsigpipe)(int);
- * 
- *    if(pipe(to) == -1)
- *        return;
- * 
- *    switch((child = fork())){
- *        case -1:
- *            close(to[0]), close(to[1]);
- *            return;
- *        case 0:
- *            close(to[1]);
- *            dup2(to[0], STDIN_FILENO);
- *            close(to[0]);
- *            execvp(
- *                    "sh",
- *                    (char *const []){
- *                        "/bin/sh",
- *                        "-c",
- *                        (char *)arg->s,
- *                        0
- *                    });
- *            exit(127);
- *    }
- * 
- *    close(to[0]);
- *    oldsigpipe = signal(SIGPIPE, SIG_IGN);
- * 
- *    for(y = 0; y < term.row; y++){
- *        for(x = 0; x < term.col; x++){
- *            if(write(to[1], term.line[y][x].c, 1) == -1)
- *                goto done;
- *        }
- *        if(write(to[1], "\n", 1) == -1)
- *            break;
- *    }
- * 
- * done:
- *    close(to[1]);
- * 
- *    signal(SIGPIPE, oldsigpipe);
- * }
- */
-
 void
 xinit(void)
 {
@@ -3754,11 +3703,6 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 			base.fg = defaultitalic;
 		else if (base.mode & ATTR_UNDERLINE)
 			base.fg = defaultunderline;
-	} else if(base.mode & ATTR_BOLD) {
-		if(base.fg == defaultfg)
-			base.fg = defaultbold;
-		font = &dc.bfont;
-		frcflags = FRC_BOLD;
 	}
 
 	if (IS_TRUECOL(base.fg)) {
@@ -4469,53 +4413,3 @@ run:
 	return 0;
 }
 
-/* select and copy the previous url on screen (do nothing if there's no url).
- * known bug: doesn't handle urls that span multiple lines (wontfix)
- * known bug: only finds first url on line (mightfix)
- */
-/*void
- *copyurl(const Arg *arg) {
- *  static char URLCHARS[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
- *      "abcdefghijklmnopqrstuvwxyz"
- *      "0123456789-._~:/?#@!$&'*+,;=%";
- *
- *  int i, row, startrow;
- *  char *linestr = calloc(sizeof(char), term.col+1); 
- *  char *c, *match = NULL;
- *
- *  row = (sel.ob.x >= 0 && sel.nb.y > 0) ? sel.nb.y-1 : term.bot;
- *  row = startrow = LIMIT(row, term.top, term.bot);
- *
- *  do {
- *      for (i = 0; i < term.col; ++i)
- *          linestr[i] = term.line[row][i].c[0];
- *      linestr[term.col] = '\0';
- *      if ((match = strstr(linestr, "http://"))
- *              || (match = strstr(linestr, "https://")))
- *          break;
- *      if (--row < term.top)
- *          row = term.bot;
- *  } while (row != startrow);
- *
- *  if (match) {
- *      selclear(NULL);
- *      sel.ob.x = strlen(linestr) - strlen(match);
- *
- *      for (c = match; *c != '\0'; ++c)
- *          if (!strchr(URLCHARS, *c)) {
- *              *c = '\0';
- *              break;
- *          }
- *
- *      sel.mode = 1;
- *      sel.type = SEL_REGULAR;
- *      sel.oe.x = sel.ob.x + strlen(match)-1;
- *      sel.ob.y = sel.oe.y = row;
- *      selnormalize();
- *      tsetdirt(sel.nb.y, sel.ne.y);
- *      selcopy();
- *  }
-
- *  free(linestr);
- * }
- */
